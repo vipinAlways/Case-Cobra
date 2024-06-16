@@ -33,7 +33,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
                 </Link>
                 {isAdmin ? (
                   <Link
-                    href="/api/auth/logout"
+                    href="/dashboard"
                     className={buttonVariants({
                       size: "sm",
                       variant: "ghost",
