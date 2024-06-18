@@ -248,7 +248,7 @@ export default function Home() {
                 href="/configure/upload"
                 className={buttonVariants({
                   size: "lg",
-                  className: "mx-auto mt-8 text-green-600 ",
+                  className: "bg-green-600 text-white hidden sm:flex items-center gap-1 hover:ease-linear duration-200 mx-auto",
                   
                 })}
               >
