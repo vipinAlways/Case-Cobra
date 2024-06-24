@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import sharp from "sharp"
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+
 import { z } from "zod";
 
 const f = createUploadthing();
@@ -46,8 +46,9 @@ export const ourFileRouter = {
             croppedImageUrl:file.url
           }
         })
+        return {configId:updatedConfiguration}
       }
-      return { configId };
+     
     }),
 } satisfies FileRouter;
 
