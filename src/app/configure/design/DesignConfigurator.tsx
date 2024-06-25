@@ -1,6 +1,7 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import React from "react";
 import NextImage from "next/image"
+import { cn } from "@/lib/utils";
 interface DesignConfigurator {
   configId: string;
   imageUrl: string;
@@ -20,8 +21,14 @@ function DesignConfigurator({
             ratio={896 / 1831}
             className="pointer-events-none relative z-50  aspect-[896/1831]"
           >
-            <NextImage width={imageDimension.width} height={imageDimension.height} alt="phone image" src='/phone-template.png' className="pointer-events-none z-50 select-none" />
+            <NextImage fill alt="phone image" src='/phone-template.png' className="pointer-events-none z-50 select-none" />
+
           </AspectRatio>
+          <div className="absolute z-40 inset-0 left-[3px] top-px right-[3px] bottom-px rounded-[32px] shadow-[0_0_0_99999px_rgba(229,231,235,0.6)]"></div>
+          <div className={cn('absolute z-40 inset-0 left-[3px] top-px right-[3px] bottom-px rounded-[32px]',`bg-blue-950`)}/>
+        </div>
+        <div className="relative w-full h-full">
+          <NextImage src={imageUrl} fill alt="client image" className="pointer-events-none"/>
         </div>
       </div>
     </div>

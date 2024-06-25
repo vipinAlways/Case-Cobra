@@ -101,7 +101,7 @@ function page() {
                 )}
               </div>
               {isPending ? null : (
-                <p className="text-xs text-zinc-500"> PNG,JPEGAND JPG</p>
+                <p className="text-xs text-zinc-500"> PNG,JPEG AND JPG</p>
               )}
             </div>
           )}
