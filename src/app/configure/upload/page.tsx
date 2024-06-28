@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Image, Loader2, MousePointerSquareDashed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import Dropzone, { FileRejection } from "react-dropzone";
+import Dropzone, { FileRejection } from "react-dropzone"; 
 
 function page() {
   const [isDrageOver, setisDrageOver] = useState<boolean>(false);
