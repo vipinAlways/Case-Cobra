@@ -2,15 +2,16 @@
 
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
+import { useUploadThing } from "@/lib/Uploading";
 
-import { useUploadThing } from "@/lib/uploading";
+// import { useUploadThing } from "@/lib/Uploading";
 import { cn } from "@/lib/utils";
 import { Image, Loader2, MousePointerSquareDashed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Dropzone, { FileRejection } from "react-dropzone"; 
 
-function page() {
+function Page() {
   const [isDrageOver, setisDrageOver] = useState<boolean>(false);
   const [UploadProgress, setUploadProgress] = useState<number>(0);
   
@@ -111,4 +112,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

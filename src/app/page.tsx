@@ -2,7 +2,7 @@ import Image from "next/image";
 import MaxWidthWrapper from "./components/MaxWidthWrapper";
 import { ArrowRight, Check, Star } from "lucide-react";
 import Phone from "./components/Phone";
-import { Icons } from "@/app/components/icon";
+import { Icons } from "@/app/components/Icon";
 import { Reviews } from "./components/Reviews";
 import Link from "next/link";
 import { buttonVariants } from "./components/ui/button";

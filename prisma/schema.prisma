@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,10 +7,98 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrderStatus {
+  fulfilled
+  shipped
+  awaitung_shipment
+}
+
+enum PhoneModel {
+  iphoneX
+  iphone11
+  iphone12
+  iphone13
+  iphone14
+  iphone15
+  iphone16
+}
+
+enum CaseMaterial {
+  silicone
+  polycarbonate
+}
+
+enum CaseFinish {
+  smooth
+  textured
+}
+
+enum CaseColors {
+  black
+  blue
+  rose
+}
+
 model Configuration {
-  id String @id @default(cuid())
-  width Int
-  height Int
-  imageUrl String
+  id              String        @id @default(cuid())
+  width           Int
+  height          Int
+  imageUrl        String
   croppedImageUrl String?
+  model           PhoneModel?
+  material        CaseMaterial?
+  finish          CaseFinish?
+  colors          CaseColors?
+  Order           Order[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  Order     Order[]
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  configurationID String
+  configuration   Configuration @relation(fields: [configurationID], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  amount          Float
+  isPaid          Boolean       @default(false)
+  status          OrderStatus    @default(awaitung_shipment)
+
+  ShippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
+  shippingAddressId String?
+  BillingAddress    BillingAddress?  @relation(fields: [billingAddressId], references: [id])
+  billingAddressId  String?
+
+  createdAt DateTime @default(now())
+  updated   DateTime @updatedAt
+}
+
+model ShippingAddress {
+  id          String  @id @default(cuid())
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String?
+  orders      Order[]
+}
+
+model BillingAddress {
+  id          String  @id @default(cuid())
+  name        String
+  street      String
+  city        String
+  postalCode  String
+  country     String
+  state       String?
+  phoneNumber String?
+  orders      Order[]
 }
