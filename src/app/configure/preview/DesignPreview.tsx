@@ -80,11 +80,11 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
         />
       </div>
           <LoginModal isOpen={isLoginModalOpen} setIsOpen={setisLoginModalOpen} />
-      <div className="mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
+      <div className="mt-20 flex flex-col items-center md:grid  text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12">
         <div className="sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2">
           <Phone
             imgSrc={configuration.croppedImageUrl!}
-            className={cn(`bg-${tw}`)}
+            className={cn(`bg-${tw}`,'max-w-[150px] md:max-w-full')}
           />
         </div>
         <div className="mt-6 sm:col-span-9 sm:mt-0 md:row-end-1">

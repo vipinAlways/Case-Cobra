@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import PhonePreview from "../components/PhonePreview";
 import { formatePrice } from "@/lib/utils";
+import Link from "next/link";
 
 function THANKYOU() {
   const searchParams = useSearchParams();
@@ -144,6 +145,12 @@ function THANKYOU() {
           </div>
         </div>
         </div>
+
+          <button className="text-center mt-12">
+              <Link href="/" className="text-center text-lg py-2 px-3 rounded-md bg-green-500">
+                Back to home page
+              </Link>
+            </button>
         </div>
       </div>
     
