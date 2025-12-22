@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import MaxWidthWrapper from "./components/MaxWidthWrapper";
 import { ArrowRight, Check, Star } from "lucide-react";
 import Phone from "./components/Phone";
@@ -6,8 +6,6 @@ import Phone from "./components/Phone";
 import { Reviews } from "./components/Reviews";
 import Link from "next/link";
 import { buttonVariants } from "./components/ui/button";
-import { Icons } from "./components/Icon";
-
 
 const Home = () => {
   return (
@@ -108,12 +106,7 @@ const Home = () => {
         <MaxWidthWrapper className="flex flex-col items-center gap-16 sm:gap-32">
           <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-6 ">
             <h2 className="order-1 mt-2 tracking-tighter text-center text-balance !leading-tight font-bold text-5xl md:text-6xl  text-gray-900 ">
-              What our{" "}
-              <span className="relative px-2">
-                customers{" "}
-                <Icons.underline className="hidden sm:block pointer-events-none absolute inset-x-0 -bottom-6 text-green-500 " />
-              </span>{" "}
-              say
+              What our <span className="relative px-2">customers </span> say
             </h2>
             <img
               src="/snake-2.png"
