@@ -23,12 +23,13 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { ArrowRight, Check, ChevronsUpDown, Radio } from "lucide-react";
 import { BASE_PRICE } from "@/config/products";
-import { useUploadThing } from "@/lib/Uploading";
+
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { SaveConfigArgs } from "./actions";
 import { saveConfig as _saveConfig } from "./actions";
 import { useRouter } from "next/navigation";
+import { useUploadThing } from "@/lib/uploading";
 
 interface DesignConfigurator {
   configId: string;
@@ -36,109 +37,6 @@ interface DesignConfigurator {
   imageDimension: { width: number; height: number };
 }
 
-// function DesignConfigurator({
-//   configId,
-//   imageUrl,
-//   imageDimension,
-// }: DesignConfigurator) {
-//   const { toast } = useToast();
-//   const router = useRouter()
-//   const { mutate: saveConfig } = useMutation({
-//     mutationKey: ["save-config"],
-//     mutationFn: async (args: SaveConfigArgs) => {
-//       await Promise.all([saveConfiguration, _saveConfig(args)]);
-//     },
-//     onError: () => {
-//       toast({
-//         title: "Something went Wrong",
-//         description: "There is an error from our side. Please try again ",
-//         variant:"destructive"
-//       });
-//     },
-//     onSuccess:()=>{
-//       router.push(`/configure/preview?id=${configId}`)
-//     }
-//   });
-
-//   const [options, setOptions] = useState<{
-//     color: (typeof COLORS)[number];
-//     model: (typeof MODELS.options)[number];
-//     material: (typeof MATERIAL.options)[number];
-//     finish: (typeof FINISHES.options)[number];
-//   }>({
-//     color: COLORS[0],
-//     model: MODELS.options[0],
-//     material: MATERIAL.options[0],
-//     finish: FINISHES.options[0],
-//   });
-
-//   const [renderedDimension, setRenderedDimension] = useState({
-//     width: imageDimension.width / 4,
-//     height: imageDimension.height / 4,
-//   });
-//   const phoneCaseRef = useRef<HTMLDivElement>(null);
-//   const containerRef = useRef<HTMLDivElement>(null);
-//   const [rederredPosition, setRederredPosition] = useState({ x: 150, y: 205 });
-//   const { startUpload } = useUploadThing("imageUploader");
-
-//   async function saveConfiguration() {
-//     try {
-//       const {
-//         left: caseLeft,
-//         top: caseTop,
-//         width,
-//         height,
-//       } = phoneCaseRef.current!.getBoundingClientRect(); //gives the exact condinates of phone case cordinates
-//       const { left: containerLeft, top: containerTop } =
-//         containerRef.current!.getBoundingClientRect();
-
-//       const leftOffSet = caseLeft - containerLeft;
-//       const topOffSet = caseTop - containerTop;
-
-//       const actualX = rederredPosition.x - leftOffSet;
-//       const actualY = rederredPosition.y - topOffSet;
-
-//       const canvas = document.createElement("canvas");
-//       canvas.height = height;
-//       canvas.width = width;
-//       const ctx = canvas.getContext("2d");
-//       const userImage = new Image();
-//       userImage.crossOrigin = "anonymous";
-//       userImage.src = imageUrl;
-//       await new Promise((resolve) => (userImage.onload = resolve));
-//       ctx?.drawImage(
-//         userImage,
-//         actualX,
-//         actualY,
-//         renderedDimension.width,
-//         renderedDimension.height
-//       );
-
-//       const base64 = canvas.toDataURL();
-//       const base64Data = base64.split(",")[1];
-
-//       const blob = base64ToBlob(base64Data, "image/png");
-//       const file = new File([blob], "filename.png", { type: "image/png" });
-
-//       await startUpload([file], { configId });
-//     } catch (error) {
-//       toast({
-//         title: "something went wrong",
-//         description: "There is proble, saving your config, Please try again.",
-//         variant: "destructive",
-//       });
-//     }
-
-//     function base64ToBlob(base64: string, mimeType: string) {
-//       const byteCharacter = atob(base64);
-//       const byteNumber = new Array(byteCharacter.length);
-//       for (let i = 0; i < byteCharacter.length; i++) {
-//         byteNumber[i] = byteCharacter.charCodeAt(i);
-//       }
-//       const byteArray = new Uint8Array(byteNumber);
-//       return new Blob([byteArray], { type: mimeType });
-//     }
-//   }
 const DesignConfigurator = ({
   configId,
   imageUrl,

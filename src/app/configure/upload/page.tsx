@@ -2,30 +2,34 @@
 
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
-import { useUploadThing } from "@/lib/Uploading";
-
-// import { useUploadThing } from "@/lib/Uploading";
+import { useUploadThing } from "@/lib/uploading";
 import { cn } from "@/lib/utils";
-import { Image, Loader2, MousePointerSquareDashed } from "lucide-react";
+import { Image, ImageDown, Loader2, MousePointerSquareDashed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import Dropzone, { FileRejection } from "react-dropzone"; 
+import Dropzone, { FileRejection } from "react-dropzone";
 
 function Page() {
   const [isDrageOver, setisDrageOver] = useState<boolean>(false);
   const [UploadProgress, setUploadProgress] = useState<number>(0);
-  
-  const router = useRouter();
-  const {toast} = useToast();
 
-  const { startUpload ,isUploading } = useUploadThing("imageUploader", {
+  const router = useRouter();
+ 
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: ([data]) => {
       const configId = data.serverData.configId;
       startTransition(() => {
         router.push(`/configure/design?id=${configId}`);
       });
     },
+    onUploadError: (err) => {
+      console.log("🙄🙄🙄🙄🙄🙄🙄🙄🙄", { err });
+    },
     onUploadProgress(p) {
+      console.log("💕💕💕💕💕💕",{p});
       setUploadProgress(p);
     },
   });
@@ -43,8 +47,7 @@ function Page() {
     startUpload(acceptedFiles, { configId: undefined });
     setisDrageOver(false);
   };
-  
-  const [isPending, startTransition] = useTransition();
+
   return (
     <div
       className={cn(
@@ -69,13 +72,13 @@ function Page() {
               className="h-full w-full flex-1 flex flex-col items-center justify-center"
               {...getRootProps()}
             >
-              <input type="text" {...getInputProps()} />
+              <input {...getInputProps()} />
               {isDrageOver ? (
                 <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
               ) : isUploading || isPending ? (
                 <Loader2 className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
               ) : (
-                <Image className="h-6 w-6 text-zinc-500 mb-2 " />
+                <ImageDown className="h-6 w-6 text-zinc-500 mb-2 "  />
               )}
               <div className="flex flex-col justify-center text-sm mb-2 text-zinc-700 ">
                 {isUploading ? (

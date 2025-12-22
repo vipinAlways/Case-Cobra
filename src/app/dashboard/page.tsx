@@ -118,8 +118,8 @@ const MONTLY_GOAL = 2500
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {order.map((orders)=>(
-                                <TableRow>
+                        {order.map((orders,index)=>(
+                                <TableRow key={index}>
                                     <TableCell>
                                         <div className='font-medium'>
                                             {orders.ShippingAddress?.name}

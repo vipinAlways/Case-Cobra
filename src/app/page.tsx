@@ -1,13 +1,14 @@
-import Image from "next/image";
 import MaxWidthWrapper from "./components/MaxWidthWrapper";
 import { ArrowRight, Check, Star } from "lucide-react";
 import Phone from "./components/Phone";
-import { Icons } from "@/app/components/Icon";
+
 import { Reviews } from "./components/Reviews";
 import Link from "next/link";
 import { buttonVariants } from "./components/ui/button";
+import { Icons } from "./components/Icon";
 
-export default function Home() {
+
+const Home = () => {
   return (
     <div className="bg-slate-50">
       <section>
@@ -15,7 +16,7 @@ export default function Home() {
           <div className="col-span-2 px-6 lg:px-0 lg:pt-4">
             <div className="relative mx-auto text-center lg:text-left flex flex-col items-center lg:items-start">
               <div className="absolute w-28 left-0 -top-20 hidden lg:block">
-                <img src="/snake-1.png" className="w-full" />
+                <img src="/snake-1.png" className="w-full" alt="snake" />
               </div>
               <h1 className="relative w-fit tracking-tighter text-balance mt-16 font-bold !leading-tight text-gray-900 text-5xl md:text-6xl lg:text-7xl ">
                 Your Image on a{" "}
@@ -214,6 +215,7 @@ export default function Home() {
               <img
                 src="/arrow.png"
                 className="absolute top-[25rem] md:top-1/2 lg:top-1/2 -translate-y-1/2 z-10 left-1/2 -translate-x-1/2 rotate-90 md:rotate-0"
+                alt="arrow"
               />
               <div className="relative h-80 md:h-full w-full md:justify-self-end max-w-sm rounded-xl bg-gray-900/5 ring-inset ring-gray-900/10 lg:rounded-2xl ">
                 <img
@@ -248,8 +250,8 @@ export default function Home() {
                 href="/configure/upload"
                 className={buttonVariants({
                   size: "lg",
-                  className: "bg-green-600 text-white hidden sm:flex items-center gap-1 hover:ease-linear duration-200 mx-auto",
-                  
+                  className:
+                    "bg-green-600 text-white hidden sm:flex items-center gap-1 hover:ease-linear duration-200 mx-auto",
                 })}
               >
                 {" "}
@@ -261,4 +263,6 @@ export default function Home() {
       </section>
     </div>
   );
-}
+};
+
+export default Home;

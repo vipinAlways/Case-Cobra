@@ -1,5 +1,4 @@
 import { db } from "@/db";
-import { NextApiRequest, NextApiResponse } from "next";
 import sharp from "sharp";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { z } from "zod";
@@ -15,7 +14,6 @@ export const ourFileRouter = {
       })
     )
     .middleware(async ({ input }) => {
-
       return { input };
     })
     .onUploadComplete(async ({ metadata, file }) => {
@@ -49,8 +47,11 @@ export const ourFileRouter = {
         });
 
         return { configId: updatedConfiguration.id };
-      } catch (error) {
-        throw new Error("Failed to upload image", { cause: error });
+      } catch (e) {
+        console.error("uploadthing onUploadComplete error:", e);
+        // Return a simple JSON response so the client doesn't receive an HTML error page
+        // which UploadThing's client fails to parse.
+        return { configId: null };
       }
     }),
 } satisfies FileRouter;
