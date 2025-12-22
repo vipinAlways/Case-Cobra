@@ -16,18 +16,22 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useToast } from "@/components/ui/use-toast";
 import LoginModal from "@/app/components/LoginModal";
 
-function DesignPreview({ configuration }: { configuration: Configuration }) {
+function DesignPreview({
+  configuration,
+  user,
+}: {
+  configuration: Configuration;
+  user: boolean;
+}) {
   const [showConfetti, setShowConfetti] = useState(false);
   const [disable, setDisable] = useState<boolean>(false);
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
-  const { user, isLoading } = useKindeBrowserClient();
 
   useEffect(() => {
     setShowConfetti(true);
   }, []);
-
 
   const [isLoginModalOpen, setisLoginModalOpen] = useState<boolean>(false);
 
@@ -59,7 +63,6 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
         variant: "destructive",
       });
       setDisable(false);
-      console.log("💕💕💕💕", { err });
     },
   });
 
@@ -75,8 +78,6 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
     }
   };
 
- 
-  if (isLoading) return <Loader2 className="animate-spin" />;
   return (
     <>
       <div className="pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center">

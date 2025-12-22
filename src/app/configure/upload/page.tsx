@@ -4,7 +4,12 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { useUploadThing } from "@/lib/uploading";
 import { cn } from "@/lib/utils";
-import { Image, ImageDown, Loader2, MousePointerSquareDashed } from "lucide-react";
+import {
+  Image,
+  ImageDown,
+  Loader2,
+  MousePointerSquareDashed,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
@@ -14,7 +19,7 @@ function Page() {
   const [UploadProgress, setUploadProgress] = useState<number>(0);
 
   const router = useRouter();
- 
+
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
@@ -25,13 +30,14 @@ function Page() {
         router.push(`/configure/design?id=${configId}`);
       });
     },
-    onUploadError: (err) => {
-      console.log("🙄🙄🙄🙄🙄🙄🙄🙄🙄", { err });
+    onUploadError:(err)=>{
+      console.log('err 🙌🙌🙌🙌🙌🙌🙌🙌', err)
     },
+
     onUploadProgress(p) {
-      console.log("💕💕💕💕💕💕",{p});
       setUploadProgress(p);
     },
+
   });
 
   const onDropRejected = (rejectedFile: FileRejection[]) => {
@@ -78,7 +84,7 @@ function Page() {
               ) : isUploading || isPending ? (
                 <Loader2 className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
               ) : (
-                <ImageDown className="h-6 w-6 text-zinc-500 mb-2 "  />
+                <ImageDown className="h-6 w-6 text-zinc-500 mb-2 " />
               )}
               <div className="flex flex-col justify-center text-sm mb-2 text-zinc-700 ">
                 {isUploading ? (
