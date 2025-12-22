@@ -7,7 +7,7 @@ import { cn, formatePrice } from "@/lib/utils";
 import { COLORS, MODELS } from "@/validators/options-validators";
 import { Configuration } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { createCheckoutSession } from "./action";
@@ -23,10 +23,10 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
-  const { user } = useKindeBrowserClient();
+  const { user, isLoading,isAuthenticated } = useKindeBrowserClient();
   const [isLoginModalOpen, setisLoginModalOpen] = useState<boolean>(false);
 
-  useEffect(() => setShowConfetti(true),[showConfetti]);
+  useEffect(() => setShowConfetti(true), [showConfetti]);
 
   const { colors, model, finish, material } = configuration;
   const tw = COLORS.find(
@@ -55,14 +55,15 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
         description: "There was an error in our end.Please try again",
         variant: "destructive",
       });
-
+      setDisable(false);
       console.log("💕💕💕💕", { err });
     },
   });
 
   const handleCheckout = () => {
-    if (user) {
+    if (user || isAuthenticated) {
       //create paymentSession
+      setDisable(true);
       createPaymentSession({ configId: id });
     } else {
       //need to login
@@ -70,6 +71,8 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
       setisLoginModalOpen(true);
     }
   };
+
+  if (isLoading) return <Loader2 className="animate-spin" />;
   return (
     <>
       <div className="pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center">

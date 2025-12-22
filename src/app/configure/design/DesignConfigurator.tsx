@@ -42,52 +42,54 @@ const DesignConfigurator = ({
   imageUrl,
   imageDimension,
 }: DesignConfigurator) => {
-  const { toast } = useToast()
-  const router = useRouter()
+  const { toast } = useToast();
+  const router = useRouter();
+  const [disable, setDisable] = useState<boolean>(false);
 
   const { mutate: saveConfig, isPending } = useMutation({
-    mutationKey: ['save-config'],
+    mutationKey: ["save-config"],
     mutationFn: async (args: SaveConfigArgs) => {
-      await Promise.all([saveConfiguration(), _saveConfig(args)])
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
     },
     onError: () => {
       toast({
-        title: 'Something went wrong',
-        description: 'There was an error on our end. Please try again.',
-        variant: 'destructive',
-      })
+        title: "Something went wrong",
+        description: "There was an error on our end. Please try again.",
+        variant: "destructive",
+      });
+      setDisable(false)
     },
     onSuccess: () => {
-      router.push(`/configure/preview?id=${configId}`)
+      router.push(`/configure/preview?id=${configId}`);
     },
-  })
+  });
 
   const [options, setOptions] = useState<{
-    color: (typeof COLORS)[number]
-    model: (typeof MODELS.options)[number]
-    material: (typeof MATERIAL.options)[number]
-    finish: (typeof FINISHES.options)[number]
+    color: (typeof COLORS)[number];
+    model: (typeof MODELS.options)[number];
+    material: (typeof MATERIAL.options)[number];
+    finish: (typeof FINISHES.options)[number];
   }>({
     color: COLORS[0],
     model: MODELS.options[0],
     material: MATERIAL.options[0],
     finish: FINISHES.options[0],
-  })
+  });
 
   const [renderedDimension, setRenderedDimension] = useState({
     width: imageDimension.width / 4,
     height: imageDimension.height / 4,
-  })
+  });
 
   const [renderedPosition, setRenderedPosition] = useState({
     x: 150,
     y: 205,
-  })
+  });
 
-  const phoneCaseRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const phoneCaseRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { startUpload } = useUploadThing('imageUploader')
+  const { startUpload } = useUploadThing("imageUploader");
 
   async function saveConfiguration() {
     try {
@@ -96,26 +98,26 @@ const DesignConfigurator = ({
         top: caseTop,
         width,
         height,
-      } = phoneCaseRef.current!.getBoundingClientRect()
+      } = phoneCaseRef.current!.getBoundingClientRect();
 
       const { left: containerLeft, top: containerTop } =
-        containerRef.current!.getBoundingClientRect()
+        containerRef.current!.getBoundingClientRect();
 
-      const leftOffset = caseLeft - containerLeft
-      const topOffset = caseTop - containerTop
+      const leftOffset = caseLeft - containerLeft;
+      const topOffset = caseTop - containerTop;
 
-      const actualX = renderedPosition.x - leftOffset
-      const actualY = renderedPosition.y - topOffset
+      const actualX = renderedPosition.x - leftOffset;
+      const actualY = renderedPosition.y - topOffset;
 
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height
-      const ctx = canvas.getContext('2d')
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
 
-      const userImage = new Image()
-      userImage.crossOrigin = 'anonymous'
-      userImage.src = imageUrl
-      await new Promise((resolve) => (userImage.onload = resolve))
+      const userImage = new Image();
+      userImage.crossOrigin = "anonymous";
+      userImage.src = imageUrl;
+      await new Promise((resolve) => (userImage.onload = resolve));
 
       ctx?.drawImage(
         userImage,
@@ -123,33 +125,33 @@ const DesignConfigurator = ({
         actualY,
         renderedDimension.width,
         renderedDimension.height
-      )
+      );
 
-      const base64 = canvas.toDataURL()
-      const base64Data = base64.split(',')[1]
+      const base64 = canvas.toDataURL();
+      const base64Data = base64.split(",")[1];
 
-      const blob = base64ToBlob(base64Data, 'image/png')
-      const file = new File([blob], 'filename.png', { type: 'image/png' })
+      const blob = base64ToBlob(base64Data, "image/png");
+      const file = new File([blob], "filename.png", { type: "image/png" });
 
-      await startUpload([file], { configId })
+      await startUpload([file], { configId });
     } catch (err) {
       toast({
-        title: 'Something went wrong',
+        title: "Something went wrong",
         description:
-          'There was a problem saving your config, please try again.',
-        variant: 'destructive',
-      })
+          "There was a problem saving your config, please try again.",
+        variant: "destructive",
+      });
     }
   }
 
   function base64ToBlob(base64: string, mimeType: string) {
-    const byteCharacters = atob(base64)
-    const byteNumbers = new Array(byteCharacters.length)
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
     for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i)
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
-    const byteArray = new Uint8Array(byteNumbers)
-    return new Blob([byteArray], { type: mimeType })
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
   }
 
   return (
@@ -398,13 +400,17 @@ const DesignConfigurator = ({
                 <Button
                   size="sm"
                   className="w-full bg-green-500"
-                  onClick={() => saveConfig({
-                    configId,
-                    colors:options.color.value,
-                    finish:options.finish.value,
-                    material:options.material.value,
-                    model:options.model.value,
-                  })}
+                  onClick={() => {
+                    setDisable(true);
+                    saveConfig({
+                      configId,
+                      colors: options.color.value,
+                      finish: options.finish.value,
+                      material: options.material.value,
+                      model: options.model.value,
+                    });
+                  }}
+                  disabled={disable}
                 >
                   Continue <ArrowRight className="h-4 w-4 ml-1.5 inline " />
                 </Button>
@@ -415,6 +421,6 @@ const DesignConfigurator = ({
       </div>
     </div>
   );
-}
+};
 
 export default DesignConfigurator;
