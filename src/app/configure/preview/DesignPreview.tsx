@@ -2,7 +2,6 @@
 import Phone from "@/app/components/Phone";
 import { Button } from "@/app/components/ui/button";
 import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products";
-import { db } from "@/db";
 import { cn, formatePrice } from "@/lib/utils";
 import { COLORS, MODELS } from "@/validators/options-validators";
 import { Configuration } from "@prisma/client";
@@ -23,7 +22,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
-  const { user, isLoading,isAuthenticated } = useKindeBrowserClient();
+  const { isLoading,isAuthenticated } = useKindeBrowserClient();
   const [isLoginModalOpen, setisLoginModalOpen] = useState<boolean>(false);
 
   useEffect(() => setShowConfetti(true), [showConfetti]);
@@ -61,7 +60,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
   });
 
   const handleCheckout = () => {
-    if (user || isAuthenticated) {
+    if (isAuthenticated) {
       //create paymentSession
       setDisable(true);
       createPaymentSession({ configId: id });
