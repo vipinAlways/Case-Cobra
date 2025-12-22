@@ -22,10 +22,14 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
-  const { isLoading,isAuthenticated } = useKindeBrowserClient();
-  const [isLoginModalOpen, setisLoginModalOpen] = useState<boolean>(false);
+  const { user, isLoading } = useKindeBrowserClient();
 
-  useEffect(() => setShowConfetti(true), [showConfetti]);
+  useEffect(() => {
+    setShowConfetti(true);
+  }, []);
+
+
+  const [isLoginModalOpen, setisLoginModalOpen] = useState<boolean>(false);
 
   const { colors, model, finish, material } = configuration;
   const tw = COLORS.find(
@@ -60,7 +64,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
   });
 
   const handleCheckout = () => {
-    if (isAuthenticated) {
+    if (user) {
       //create paymentSession
       setDisable(true);
       createPaymentSession({ configId: id });
@@ -71,6 +75,7 @@ function DesignPreview({ configuration }: { configuration: Configuration }) {
     }
   };
 
+ 
   if (isLoading) return <Loader2 className="animate-spin" />;
   return (
     <>
