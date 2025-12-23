@@ -8,45 +8,45 @@ import { z } from "zod";
 const f = createUploadthing();
 
 export const ourFileRouter = {
-  imageUploader: f({ 
-    image: { 
+  imageUploader: f({
+    image: {
       maxFileSize: "4MB",
       maxFileCount: 1,
-    } 
+    },
   })
     .input(
-      z.object({
-        configId: z.string().optional(),
-      })
+      z
+        .object({
+          configId: z.string().optional().nullable(),
+        })
+        .default({ configId: null })
     )
     .middleware(async ({ input }) => {
-      console.log("Middleware called with input:", input);
-      return { input };
+      const configId = input?.configId || null;
+
+      return { configId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for file:", file.url);
-      
       try {
-        const { configId } = metadata.input;
+        const configId = metadata.configId;
 
-        // Add timeout to fetch
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const res = await fetch(file.url, {
           signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
 
         if (!res.ok) {
-          throw new UploadThingError(`Failed to fetch image: ${res.status} ${res.statusText}`);
+          throw new UploadThingError(
+            `Failed to fetch image: ${res.status} ${res.statusText}`
+          );
         }
 
         const arrayBuffer = await res.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-
-        console.log("Processing image with sharp, buffer size:", buffer.length);
 
         const imageData = await sharp(buffer).metadata();
         const { width, height } = imageData;
@@ -55,10 +55,7 @@ export const ourFileRouter = {
           throw new UploadThingError("Invalid image dimensions");
         }
 
-        console.log("Image dimensions:", { width, height });
-
         if (!configId) {
-          console.log("Creating new configuration");
           const configuration = await db.configuration.create({
             data: {
               imageUrl: file.url,
@@ -67,11 +64,9 @@ export const ourFileRouter = {
             },
           });
 
-          console.log("Configuration created:", configuration.id);
           return { configId: configuration.id };
         }
 
-        console.log("Updating configuration:", configId);
         const updatedConfiguration = await db.configuration.update({
           where: { id: configId },
           data: {
@@ -79,17 +74,16 @@ export const ourFileRouter = {
           },
         });
 
-        console.log("Configuration updated:", updatedConfiguration.id);
         return { configId: updatedConfiguration.id };
       } catch (error) {
-        console.error("Upload processing error:", error);
-        
         if (error instanceof UploadThingError) {
           throw error;
         }
-        
+
         throw new UploadThingError(
-          `Failed to process image: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Failed to process image: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
         );
       }
     }),

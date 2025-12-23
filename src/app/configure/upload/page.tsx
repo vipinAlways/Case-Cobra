@@ -4,61 +4,111 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { useUploadThing } from "@/lib/uploading";
 import { cn } from "@/lib/utils";
-import {
-  Image,
-  ImageDown,
-  Loader2,
-  MousePointerSquareDashed,
-} from "lucide-react";
+import { ImageDown, Loader2, MousePointerSquareDashed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
 
 function Page() {
-  const [isDrageOver, setisDrageOver] = useState<boolean>(false);
-  const [UploadProgress, setUploadProgress] = useState<number>(0);
+  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const router = useRouter();
-
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
-    onClientUploadComplete: ([data]) => {
-      const configId = data.serverData.configId;
+    onClientUploadComplete: (res) => {
+      if (!res || res.length === 0) {
+        console.error("❌ No response from server");
+        toast({
+          title: "Upload failed",
+          description: "No response from server",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const serverData = res[0].serverData;
+
+      if (!serverData || !serverData.configId) {
+        toast({
+          title: "Upload failed",
+          description: "No configuration ID received from server",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const configId = serverData.configId;
+
       startTransition(() => {
         router.push(`/configure/design?id=${configId}`);
       });
     },
-    onUploadError:(err)=>{
-      console.log('err 🙌🙌🙌🙌🙌🙌🙌🙌', err)
+
+    onUploadError: (err) => {
+      toast({
+        title: "Upload failed",
+        description: err.message || "Something went wrong during upload",
+        variant: "destructive",
+      });
+      setUploadProgress(0);
     },
 
-    onUploadProgress(p) {
+    onUploadProgress: (p) => {
       setUploadProgress(p);
     },
-
   });
 
-  const onDropRejected = (rejectedFile: FileRejection[]) => {
-    const [file] = rejectedFile;
-    setisDrageOver(false);
+  const onDropRejected = (rejectedFiles: FileRejection[]) => {
+    const [file] = rejectedFiles;
+    setIsDragOver(false);
+
     toast({
       title: `${file.file.type} type is not supported`,
-      description: "Please choose a PNG , JPEG and JPG",
+      description: "Please choose a PNG, JPEG or JPG file",
       variant: "destructive",
     });
   };
-  const onDropAccepted = (acceptedFiles: File[]) => {
-    startUpload(acceptedFiles, { configId: undefined });
-    setisDrageOver(false);
+
+  const onDropAccepted = async (acceptedFiles: File[]) => {
+    console.log("📁 Files accepted:", acceptedFiles);
+    setIsDragOver(false);
+
+    if (acceptedFiles.length === 0) {
+      toast({
+        title: "No file selected",
+        description: "Please select a file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("🚀 Starting upload with input object");
+
+      // Try both syntaxes - one should work
+      const result = await startUpload(acceptedFiles, { configId: null });
+    } catch (error) {
+      console.error("❌ Upload start error:", error);
+
+      // Also log the full error object
+      console.error("Full error:", JSON.stringify(error, null, 2));
+
+      toast({
+        title: "Upload failed to start",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div
       className={cn(
-        "relative h-full flex-1 w-full bg-gray-900/5 p-2 ring-1 rounded-xl ring-inset ringfray-900/10 lg:rounded-2xl flex justify-center items-center flex-col",
-        { "ring-blue-900/25 bg-blue-900/10": isDrageOver }
+        "relative h-full flex-1 w-full bg-gray-900/5 p-2 ring-1 rounded-xl ring-inset ring-gray-900/10 lg:rounded-2xl flex justify-center items-center flex-col",
+        { "ring-blue-900/25 bg-blue-900/10": isDragOver }
       )}
     >
       <div className="relative flex flex-1 flex-col items-center justify-center w-full">
@@ -67,11 +117,12 @@ function Page() {
           onDropAccepted={onDropAccepted}
           accept={{
             "image/png": [".png"],
-            "image/jpeg": [".jpeg"],
-            "image/jpg": [".jpg"],
+            "image/jpeg": [".jpeg", ".jpg"],
           }}
-          onDragEnter={() => setisDrageOver(true)}
-          onDragLeave={() => setisDrageOver(false)}
+          onDragEnter={() => setIsDragOver(true)}
+          onDragLeave={() => setIsDragOver(false)}
+          maxSize={4 * 1024 * 1024} // 4MB max
+          multiple={false}
         >
           {({ getRootProps, getInputProps }) => (
             <div
@@ -79,29 +130,31 @@ function Page() {
               {...getRootProps()}
             >
               <input {...getInputProps()} />
-              {isDrageOver ? (
+
+              {isDragOver ? (
                 <MousePointerSquareDashed className="h-6 w-6 text-zinc-500 mb-2" />
               ) : isUploading || isPending ? (
                 <Loader2 className="animate-spin h-6 w-6 text-zinc-500 mb-2" />
               ) : (
-                <ImageDown className="h-6 w-6 text-zinc-500 mb-2 " />
+                <ImageDown className="h-6 w-6 text-zinc-500 mb-2" />
               )}
-              <div className="flex flex-col justify-center text-sm mb-2 text-zinc-700 ">
+
+              <div className="flex flex-col justify-center text-sm mb-2 text-zinc-700">
                 {isUploading ? (
                   <div className="flex flex-col items-center">
                     <p>Uploading...</p>
                     <Progress
                       className="mt-2 w-40 h-2 bg-gray-300"
-                      value={UploadProgress}
+                      value={uploadProgress}
                     />
                   </div>
                 ) : isPending ? (
-                  <div className="felx flex-col items-center">
-                    <p>Redirecting please wait...</p>
+                  <div className="flex flex-col items-center">
+                    <p>Redirecting, please wait...</p>
                   </div>
-                ) : isDrageOver ? (
+                ) : isDragOver ? (
                   <p>
-                    <span className="font-semibold">Drop file</span>to upload
+                    <span className="font-semibold">Drop file</span> to upload
                   </p>
                 ) : (
                   <p>
@@ -110,8 +163,11 @@ function Page() {
                   </p>
                 )}
               </div>
-              {isPending ? null : (
-                <p className="text-xs text-zinc-500"> PNG,JPEG AND JPG</p>
+
+              {!isPending && (
+                <p className="text-xs text-zinc-500">
+                  PNG, JPEG or JPG (max 4MB)
+                </p>
               )}
             </div>
           )}

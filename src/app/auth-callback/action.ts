@@ -1,28 +1,33 @@
-"use server "
-import { db } from "@/db"
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
+"use server";
 
-export const getAuthStatus=async ()=>{
-    const {getUser} =getKindeServerSession()
-    const user = await getUser()
+import { db } from "@/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-    if (!user?.id  || !user?.email) {
-        throw new Error('Invalid user data')
+export const getAuthStatus = async () => {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id || !user?.email) {
+      throw new Error("Invalid user data");
     }
 
-    const exisingUser = await db.user.findFirst({
-        where:{id:user.id},
+    const existingUser = await db.user.findFirst({
+      where: { id: user.id },
+    });
 
-    })
-
-    if (!exisingUser) {
-        await db.user.create({
-            data:{
-                id:user.id,
-                email:user.email
-            }
-        })
+    if (!existingUser) {
+      await db.user.create({
+        data: {
+          id: user.id,
+          email: user.email,
+        },
+      });
     }
 
-    return {success:true}
-}
+    return { success: true };
+  } catch (error) {
+    console.error("Auth status error:", error);
+    throw new Error("Failed to authenticate user");
+  }
+};
